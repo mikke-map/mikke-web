@@ -26,7 +26,6 @@ const getMockUsers = (): UserProfile[] => [
   {
     uid: '1',
     displayName: '山田太郎',
-    photoURL: null,
     email: 'yamada@example.com',
     stats: { totalSpots: 125, totalLikes: 450, totalViews: 1200 },
     createdAt: new Date(),
@@ -36,7 +35,6 @@ const getMockUsers = (): UserProfile[] => [
   {
     uid: '2',
     displayName: '鈴木花子',
-    photoURL: null,
     email: 'suzuki@example.com',
     stats: { totalSpots: 89, totalLikes: 320, totalViews: 890 },
     createdAt: new Date(),
@@ -46,7 +44,6 @@ const getMockUsers = (): UserProfile[] => [
   {
     uid: '3',
     displayName: '佐藤次郎',
-    photoURL: null,
     email: 'sato@example.com',
     stats: { totalSpots: 67, totalLikes: 280, totalViews: 750 },
     createdAt: new Date(),
@@ -56,7 +53,6 @@ const getMockUsers = (): UserProfile[] => [
   {
     uid: '4',
     displayName: '田中美咲',
-    photoURL: null,
     email: 'tanaka@example.com',
     stats: { totalSpots: 45, totalLikes: 190, totalViews: 540 },
     createdAt: new Date(),
@@ -66,7 +62,6 @@ const getMockUsers = (): UserProfile[] => [
   {
     uid: '5',
     displayName: '伊藤健一',
-    photoURL: null,
     email: 'ito@example.com',
     stats: { totalSpots: 32, totalLikes: 140, totalViews: 420 },
     createdAt: new Date(),

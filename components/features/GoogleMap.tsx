@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHand
 import { Navigation, Plus, MapPin } from 'lucide-react';
 import { loadGoogleMaps, createMap, getCurrentLocation, geocodeLatLng } from '@/lib/google-maps/config';
 import { FirebaseSpot } from '@/lib/firebase/spots';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface GoogleMapProps {
   spots: FirebaseSpot[];
@@ -26,6 +27,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
   const isDraggingRef = useRef(false);
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const eventListenerRef = useRef<((e: any) => void) | null>(null);
+  const { user } = useAuth();
 
   // Expose clearTempMarker method to parent
   useImperativeHandle(ref, () => ({
@@ -80,6 +82,9 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
 
   // Handle long press on map
   const handleLongPress = useCallback(async (latLng: google.maps.LatLng, map: google.maps.Map) => {
+    // Check if user is authenticated with Google (not anonymous)
+    const isGoogleAuthenticated = user && !user.isAnonymous;
+    
     const lat = latLng.lat();
     const lng = latLng.lng();
 
@@ -110,9 +115,10 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
     try {
       const address = await geocodeLatLng(lat, lng);
       
-      // Show info window
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
+      // Show info window with authentication check
+      let infoContent: string;
+      if (isGoogleAuthenticated) {
+        infoContent = `
           <div style="padding: 8px;">
             <p style="font-weight: bold; margin-bottom: 4px;">この場所にスポットを追加</p>
             <p style="font-size: 12px; color: #666; margin-bottom: 8px;">${address}</p>
@@ -121,31 +127,61 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
               スポットを追加
             </button>
           </div>
-        `,
+        `;
+      } else {
+        infoContent = `
+          <div style="padding: 8px;">
+            <p style="font-weight: bold; margin-bottom: 4px;">スポットを追加するには</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Googleアカウントでのログインが必要です</p>
+          </div>
+        `;
+      }
+      
+      const infoWindow = new google.maps.InfoWindow({
+        content: infoContent,
       });
 
       infoWindow.open(map, newTempMarker);
       infoWindowRef.current = infoWindow;
 
-      // Listen for the custom event
-      const handleAddSpotAtLocation = (e: any) => {
-        infoWindow.close();
-        // Remove the temporary marker
-        newTempMarker.map = null;
-        tempMarkerRef.current = null;
-        infoWindowRef.current = null;
-        onAddSpot(e.detail);
-        window.removeEventListener('addSpotAtLocation', handleAddSpotAtLocation);
-        eventListenerRef.current = null;
-      };
-      
-      // Remove any existing listener before adding new one
-      if (eventListenerRef.current) {
-        window.removeEventListener('addSpotAtLocation', eventListenerRef.current);
+      if (isGoogleAuthenticated) {
+        // Listen for the custom event to add spot
+        const handleAddSpotAtLocation = (e: any) => {
+          infoWindow.close();
+          // Remove the temporary marker
+          newTempMarker.map = null;
+          tempMarkerRef.current = null;
+          infoWindowRef.current = null;
+          onAddSpot(e.detail);
+          window.removeEventListener('addSpotAtLocation', handleAddSpotAtLocation);
+          eventListenerRef.current = null;
+        };
+        
+        // Remove any existing listener before adding new one
+        if (eventListenerRef.current) {
+          window.removeEventListener('addSpotAtLocation', eventListenerRef.current);
+        }
+        
+        window.addEventListener('addSpotAtLocation', handleAddSpotAtLocation);
+        eventListenerRef.current = handleAddSpotAtLocation;
+      } else {
+        // Listen for login request event
+        const handleRequestLogin = () => {
+          infoWindow.close();
+          // Remove the temporary marker
+          newTempMarker.map = null;
+          tempMarkerRef.current = null;
+          infoWindowRef.current = null;
+          // Trigger login by opening profile screen
+          const profileButton = document.querySelector('[data-testid="profile-button"]') as HTMLButtonElement;
+          if (profileButton) {
+            profileButton.click();
+          }
+          window.removeEventListener('requestLogin', handleRequestLogin);
+        };
+        
+        window.addEventListener('requestLogin', handleRequestLogin);
       }
-      
-      window.addEventListener('addSpotAtLocation', handleAddSpotAtLocation);
-      eventListenerRef.current = handleAddSpotAtLocation;
 
       // Remove marker when info window is closed
       infoWindow.addListener('closeclick', () => {
@@ -156,12 +192,15 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
           window.removeEventListener('addSpotAtLocation', eventListenerRef.current);
           eventListenerRef.current = null;
         }
+        window.removeEventListener('requestLogin', () => {});
       });
     } catch (error) {
       console.error('Failed to get address:', error);
-      onAddSpot({ lat, lng });
+      if (isGoogleAuthenticated) {
+        onAddSpot({ lat, lng });
+      }
     }
-  }, [onAddSpot]);
+  }, [onAddSpot, user]);
 
   // Initialize map
   useEffect(() => {
@@ -438,32 +477,56 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
         </div>
       )}
 
-      {/* Instructions overlay */}
+      {/* Instructions overlay - Show different message based on auth state */}
       <div className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-md">
         <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center">
           <MapPin className="w-3 h-3 mr-1" />
-          地図を長押しでスポット追加
+          {user && !user.isAnonymous 
+            ? '地図を長押しでスポット追加'
+            : 'Googleログインでスポット追加可能'}
         </p>
       </div>
 
-      {/* Map Controls */}
-      <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
-        <button
-          onClick={handleGetLocation}
-          className="bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-          aria-label="現在地を表示"
-        >
-          <Navigation className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-        </button>
-        
+      {/* Location button */}
+      <button
+        onClick={handleGetLocation}
+        className="absolute bottom-20 right-4 p-3 bg-white dark:bg-gray-700 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+        aria-label="現在地を取得"
+      >
+        <Navigation className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+      </button>
+
+      {/* Add button - Only show if user is authenticated with Google */}
+      {user && !user.isAnonymous && (
         <button
           onClick={() => onAddSpot()}
-          className="bg-primary hover:bg-primary-dark p-3 rounded-full shadow-lg hover:shadow-xl transition-all"
+          className="absolute bottom-4 right-4 p-3 bg-terracotta-500 dark:bg-terracotta-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-terracotta-600 dark:hover:bg-terracotta-700 transition-all"
           aria-label="スポットを追加"
         >
-          <Plus className="w-6 h-6 text-white" />
+          <Plus className="w-5 h-5" />
         </button>
-      </div>
+      )}
+      
+      {/* Show hint for non-authenticated users */}
+      {(!user || user.isAnonymous) && (
+        <div className="absolute bottom-4 right-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg max-w-xs">
+          <p className="text-xs text-gray-600 dark:text-gray-400">
+            スポットを追加するには
+            <button 
+              onClick={() => {
+                const profileButton = document.querySelector('[data-testid="profile-button"]') as HTMLButtonElement;
+                if (profileButton) {
+                  profileButton.click();
+                }
+              }}
+              className="text-terracotta-500 dark:text-terracotta-400 underline ml-1"
+            >
+              Googleでログイン
+            </button>
+            してください
+          </p>
+        </div>
+      )}
     </section>
   );
 });

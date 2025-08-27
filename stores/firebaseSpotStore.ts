@@ -23,7 +23,7 @@ interface FirebaseSpotState {
   // Actions
   initializeSpots: () => void;
   fetchSpots: (category?: CategoryId) => Promise<void>;
-  addSpot: (spotData: Omit<FirebaseSpot, 'id' | 'stats' | 'createdAt' | 'updatedAt' | 'isActive'>, images?: File[]) => Promise<string>;
+  addSpot: (spotData: Omit<FirebaseSpot, 'id' | 'stats' | 'createdAt' | 'updatedAt' | 'isActive'>, images?: (File | string)[]) => Promise<string>;
   updateSpot: (id: string, updates: Partial<FirebaseSpot>) => Promise<void>;
   deleteSpot: (id: string) => Promise<void>;
   likeSpot: (spotId: string) => Promise<void>;
@@ -83,8 +83,12 @@ export const useFirebaseSpotStore = create<FirebaseSpotState>((set, get) => ({
       if (images && images.length > 0) {
         const imageUrls: string[] = [];
         for (const image of images) {
-          const url = await uploadSpotImage(spotId, image);
-          imageUrls.push(url);
+          if (image instanceof File) {
+            const url = await uploadSpotImage(image, spotId);
+            imageUrls.push(url);
+          } else if (typeof image === 'string') {
+            imageUrls.push(image);
+          }
         }
         
         // Update spot with image URLs

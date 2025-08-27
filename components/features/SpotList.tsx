@@ -174,7 +174,7 @@ export function SpotList({ spots, onSpotClick }: SpotListProps) {
                         </div>
                         <span className="flex items-center truncate max-w-[80px]">
                           <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                          {spot.location.address.split(',')[0]}
+                          {spot.location.address?.split(',')[0] || '住所なし'}
                         </span>
                       </div>
                     </div>

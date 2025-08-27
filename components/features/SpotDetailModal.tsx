@@ -55,8 +55,8 @@ export function SpotDetailModal({ spotId, onClose }: SpotDetailModalProps) {
         }
       }
       
-      if (foundSpot) {
-        setSpot(foundSpot);
+      if (foundSpot && foundSpot.id) {
+        setSpot(foundSpot as Spot);
         // Increment view count (in real app, this would be an API call)
         if (foundSpot.stats) {
           foundSpot.stats.viewsCount++;
