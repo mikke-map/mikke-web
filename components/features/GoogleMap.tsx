@@ -141,7 +141,6 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '3px solid white',
           boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
           position: 'relative'
         }}
@@ -154,7 +153,7 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
         <div 
           style={{
             position: 'absolute',
-            bottom: '-8px',
+            bottom: '-4px',
             left: '50%',
             transform: 'translateX(-50%)',
             width: '0',
