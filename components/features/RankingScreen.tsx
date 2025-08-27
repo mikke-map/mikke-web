@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Trophy, Medal, Award, Crown, ChevronRight, User } from 'lucide-react';
 import { ScreenHeader } from '@/components/layout/ScreenHeader';
 import { getTopUsers, getUserRank } from '@/lib/firebase/userStats';
@@ -77,11 +77,7 @@ export const RankingScreen: React.FC<RankingScreenProps> = ({ onMenuClick, onVie
   const [isUsingMockData, setIsUsingMockData] = useState(false);
   const currentUser = auth.currentUser;
 
-  useEffect(() => {
-    loadRankingData();
-  }, []);
-
-  const loadRankingData = async () => {
+  const loadRankingData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -113,7 +109,11 @@ export const RankingScreen: React.FC<RankingScreenProps> = ({ onMenuClick, onVie
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    loadRankingData();
+  }, [loadRankingData]);
 
   const handleViewProfile = (userId: string) => {
     if (onViewUserProfile) {

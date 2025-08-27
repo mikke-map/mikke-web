@@ -20,7 +20,7 @@ export function HamburgerMenu({ isOpen, onClose, currentScreen, onScreenChange, 
     if (isOpen) {
       onClose();
     }
-  }, [currentScreen]);
+  }, [currentScreen, isOpen, onClose]);
 
   // Handle menu visibility and animations
   useEffect(() => {

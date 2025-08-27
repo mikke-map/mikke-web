@@ -23,7 +23,7 @@ export interface GoogleMapRef {
   clearTempMarker: () => void;
 }
 
-export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
+const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
   ({ spots, onAddSpot, onSpotClick, onBoundsChange }, ref) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -126,7 +126,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
   };
 
   // Create custom marker content with icon
-  const createMarkerContent = (category: string) => {
+  const createMarkerContent = useCallback((category: string) => {
     const Icon = getCategoryIcon(category);
     const color = getCategoryColor(category);
     
@@ -170,7 +170,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
     const div = document.createElement('div');
     div.innerHTML = iconHtml;
     return div.firstChild as HTMLElement;
-  };
+  }, []);
 
   // Handle long press on map
   const handleLongPress = useCallback(async (latLng: google.maps.LatLng, map: google.maps.Map) => {
@@ -416,18 +416,19 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
     };
 
     initMap();
-  }, [map, handleLongPress]);
+  }, [map, handleLongPress, updateVisibleSpots]);
 
   // Store markers in a ref with spot IDs to avoid recreating them
   const markersMapRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
 
   // Cleanup all markers on unmount
   useEffect(() => {
+    const markersMap = markersMapRef.current;
     return () => {
-      markersMapRef.current.forEach(marker => {
+      markersMap.forEach(marker => {
         marker.map = null;
       });
-      markersMapRef.current.clear();
+      markersMap.clear();
     };
   }, []);
 
@@ -564,3 +565,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
   );
 }
 );
+
+GoogleMapComponent.displayName = 'GoogleMap';
+
+export const GoogleMap = GoogleMapComponent;

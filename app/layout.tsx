@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Noto_Sans_JP, Playfair_Display, Open_Sans } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { BadgeProvider } from '@/contexts/BadgeContext';
 import './globals.css';
@@ -61,6 +62,7 @@ export default function RootLayout({
         <AuthProvider>
           <BadgeProvider>
             {children}
+            <Analytics />
           </BadgeProvider>
         </AuthProvider>
       </body>
