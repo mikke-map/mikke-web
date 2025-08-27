@@ -34,12 +34,18 @@ export default function HomePage() {
   const mapRef = useRef<{ clearTempMarker: () => void } | null>(null);
   
   const { theme } = useThemeStore();
-  const { spots: mockSpots, loading: mockLoading, fetchSpots: fetchMockSpots } = useSpotStore();
+  const { 
+    spots: mockSpots, 
+    loading: mockLoading, 
+    fetchSpots: fetchMockSpots,
+    getFilteredSpots: getMockFilteredSpots 
+  } = useSpotStore();
   const { 
     spots: firebaseSpots, 
     loading: firebaseLoading, 
     initializeSpots,
-    cleanup 
+    cleanup,
+    getFilteredSpots: getFirebaseFilteredSpots 
   } = useFirebaseSpotStore();
   
   // Badge system
@@ -136,12 +142,12 @@ export default function HomePage() {
     localStorage.setItem('hasSeenDevelopmentStage', 'true');
   };
 
-  // Use appropriate spots based on configuration
-  const spots = useFirebase ? firebaseSpots : mockSpots;
+  // Get filtered spots from the appropriate store
+  const filteredSpots = useFirebase ? getFirebaseFilteredSpots() : getMockFilteredSpots();
   const loading = useFirebase ? firebaseLoading : mockLoading;
 
   // Convert Firebase spots to match the expected format if needed
-  const normalizedSpots = spots
+  const normalizedSpots = filteredSpots
     .filter(spot => spot.id) // Filter out spots without an id
     .map(spot => ({
       ...spot,
@@ -153,7 +159,7 @@ export default function HomePage() {
   // Filter spots to only show those visible on the map
   const visibleSpots = visibleSpotIds.length > 0
     ? normalizedSpots.filter(spot => visibleSpotIds.includes(spot.id))
-    : normalizedSpots; // Show all spots initially before map bounds are set
+    : normalizedSpots; // Show all filtered spots initially before map bounds are set
 
   if (isLoading) {
     return <LoadingScreen />;

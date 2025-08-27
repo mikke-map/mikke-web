@@ -17,6 +17,8 @@ interface FirebaseSpotState {
   loading: boolean;
   error: string | null;
   currentFilter: CategoryId | 'all';
+  currentSubCategory: string | null;
+  currentTags: string[];
   selectedSpot: FirebaseSpot | null;
   unsubscribe: (() => void) | null;
   
@@ -30,6 +32,8 @@ interface FirebaseSpotState {
   dislikeSpot: (spotId: string) => Promise<void>;
   viewSpot: (spotId: string) => Promise<void>;
   setFilter: (filter: CategoryId | 'all') => void;
+  setAdvancedFilter: (mainCategory: CategoryId | 'all', subCategory: string | null, tags: string[]) => void;
+  getFilteredSpots: () => FirebaseSpot[];
   setSelectedSpot: (spot: FirebaseSpot | null) => void;
   cleanup: () => void;
 }
@@ -39,6 +43,8 @@ export const useFirebaseSpotStore = create<FirebaseSpotState>((set, get) => ({
   loading: false,
   error: null,
   currentFilter: 'all',
+  currentSubCategory: null,
+  currentTags: [],
   selectedSpot: null,
   unsubscribe: null,
 
@@ -155,9 +161,62 @@ export const useFirebaseSpotStore = create<FirebaseSpotState>((set, get) => ({
   },
 
   setFilter: (filter) => {
-    set({ currentFilter: filter });
+    set({ currentFilter: filter, currentSubCategory: null, currentTags: [] });
     // Re-initialize with new filter
     get().initializeSpots();
+  },
+
+  setAdvancedFilter: (mainCategory, subCategory, tags) => {
+    set({ 
+      currentFilter: mainCategory, 
+      currentSubCategory: subCategory,
+      currentTags: tags 
+    });
+    // Re-initialize with new filter
+    get().initializeSpots();
+  },
+
+  getFilteredSpots: () => {
+    const state = get();
+    const { spots, currentFilter, currentSubCategory, currentTags } = state;
+    
+    // If no filter is applied, return all spots
+    if (currentFilter === 'all') {
+      return spots;
+    }
+
+    // Filter by main category
+    let filteredSpots = spots.filter(spot => {
+      // Check if spot has the new category structure
+      if (spot.category && typeof spot.category === 'object' && 'mainCategory' in spot.category) {
+        return spot.category.mainCategory === currentFilter;
+      }
+      // Fallback for legacy spots
+      return spot.category === currentFilter;
+    });
+
+    // Filter by subcategory if specified
+    if (currentSubCategory) {
+      filteredSpots = filteredSpots.filter(spot => {
+        if (spot.category && typeof spot.category === 'object' && 'subCategory' in spot.category) {
+          return spot.category.subCategory === currentSubCategory;
+        }
+        return false;
+      });
+    }
+
+    // Filter by tags if specified
+    if (currentTags.length > 0) {
+      filteredSpots = filteredSpots.filter(spot => {
+        if (spot.category && typeof spot.category === 'object' && 'tags' in spot.category && spot.category.tags) {
+          // Check if spot has at least one of the selected tags
+          return currentTags.some(tag => spot.category.tags?.includes(tag));
+        }
+        return false;
+      });
+    }
+
+    return filteredSpots;
   },
 
   setSelectedSpot: (spot) => {

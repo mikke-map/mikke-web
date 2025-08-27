@@ -1,10 +1,16 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Navigation, Plus, MapPin } from 'lucide-react';
-import { loadGoogleMaps, createMap, getCurrentLocation, geocodeLatLng } from '@/lib/google-maps/config';
+import { 
+  Navigation, Plus, Trees, Baby, PartyPopper, Coffee, 
+  Armchair, PawPrint, Bath, Dices, BabyIcon, Droplets, 
+  Sailboat, Camera, ShoppingBag, HelpCircle 
+} from 'lucide-react';
+import { loadGoogleMaps, createMap, geocodeLatLng, getCurrentLocation } from '@/lib/google-maps/config';
 import { FirebaseSpot } from '@/lib/firebase/spots';
 import { useAuth } from '@/contexts/AuthContext';
+import ReactDOMServer from 'react-dom/server';
 
 interface GoogleMapProps {
   spots: FirebaseSpot[];
@@ -17,7 +23,8 @@ export interface GoogleMapRef {
   clearTempMarker: () => void;
 }
 
-export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAddSpot, onSpotClick, onBoundsChange }, ref) => {
+export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(
+  ({ spots, onAddSpot, onSpotClick, onBoundsChange }, ref) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const tempMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
@@ -80,6 +87,91 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
     updateVisibleSpotsRef.current?.();
   }, []);
 
+  // Get category icon component
+  const getCategoryIcon = (category: string) => {
+    const iconMap: Record<string, React.ComponentType<any>> = {
+      park_outdoor: Trees,
+      family: Baby,
+      entertainment: PartyPopper,
+      food_drink: Coffee,
+      shopping: ShoppingBag,
+      tourism: Camera,
+      vending_machine: ShoppingBag,
+      pet: PawPrint,
+      public_facility: Bath,
+      transportation: Navigation,
+      others: HelpCircle,
+    };
+    
+    return iconMap[category] || HelpCircle;
+  };
+
+  // Get category color for advanced markers
+  const getCategoryColor = (category: string): string => {
+    const colors: Record<string, string> = {
+      park_outdoor: '#22c55e',      // green
+      family: '#f59e0b',            // amber
+      entertainment: '#a855f7',     // purple
+      food_drink: '#f97316',        // orange
+      shopping: '#ec4899',          // pink
+      tourism: '#10b981',           // emerald
+      vending_machine: '#14b8a6',   // teal
+      pet: '#84cc16',               // lime
+      public_facility: '#3b82f6',   // blue
+      transportation: '#6b7280',    // gray
+      others: '#8b5cf6',            // violet
+    };
+    
+    return colors[category] || colors.others || '#6b7280';
+  };
+
+  // Create custom marker content with icon
+  const createMarkerContent = (category: string) => {
+    const Icon = getCategoryIcon(category);
+    const color = getCategoryColor(category);
+    
+    // Create icon HTML
+    const iconHtml = ReactDOMServer.renderToString(
+      <div 
+        style={{
+          backgroundColor: color,
+          borderRadius: '50%',
+          width: '36px',
+          height: '36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '3px solid white',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+          position: 'relative'
+        }}
+      >
+        <Icon 
+          color="white" 
+          size={18} 
+          strokeWidth={2}
+        />
+        <div 
+          style={{
+            position: 'absolute',
+            bottom: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '0',
+            height: '0',
+            borderStyle: 'solid',
+            borderWidth: '8px 6px 0 6px',
+            borderColor: `${color} transparent transparent transparent`
+          }}
+        />
+      </div>
+    );
+
+    const div = document.createElement('div');
+    div.innerHTML = iconHtml;
+    return div.firstChild as HTMLElement;
+  };
+
   // Handle long press on map
   const handleLongPress = useCallback(async (latLng: google.maps.LatLng, map: google.maps.Map) => {
     // Check if user is authenticated with Google (not anonymous)
@@ -95,17 +187,13 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
     }
 
     // Add temporary marker with animation
-    const pinElement = new google.maps.marker.PinElement({
-      background: '#ef4444',
-      borderColor: '#ffffff',
-      glyphColor: '#ffffff',
-      scale: 1.2,
-    });
+    const tempMarkerContent = createMarkerContent('other');
+    tempMarkerContent.style.opacity = '0.8';
 
     const newTempMarker = new google.maps.marker.AdvancedMarkerElement({
       position: { lat, lng },
       map: map,
-      content: pinElement.element,
+      content: tempMarkerContent,
       title: '新しいスポット',
     });
 
@@ -200,7 +288,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
         onAddSpot({ lat, lng });
       }
     }
-  }, [onAddSpot, user]);
+  }, [onAddSpot, user, createMarkerContent]);
 
   // Initialize map
   useEffect(() => {
@@ -364,13 +452,8 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
 
       // Check if marker already exists
       if (!currentMarkers.has(spot.id)) {
-        // Create custom pin element
-        const pinElement = new google.maps.marker.PinElement({
-          background: getCategoryColor(spot.category.mainCategory),
-          borderColor: '#ffffff',
-          glyphColor: '#ffffff',
-          scale: 0.9,
-        });
+        // Create custom marker with icon
+        const markerContent = createMarkerContent(spot.category.mainCategory);
 
         const marker = new google.maps.marker.AdvancedMarkerElement({
           position: {
@@ -379,7 +462,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
           },
           map: map,
           title: spot.title,
-          content: pinElement.element,
+          content: markerContent,
         });
 
         marker.addListener('click', () => {
@@ -406,7 +489,7 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
     return () => {
       // Don't clear markers here, they will be managed by the ref
     };
-  }, [map, spots, onSpotClick]);
+  }, [map, spots, onSpotClick, createMarkerContent]);
 
   // Get current location
   const handleGetLocation = useCallback(async () => {
@@ -441,29 +524,6 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
     }
   }, [map]);
 
-  // Get category color for advanced markers
-  const getCategoryColor = (category: string): string => {
-    const colors: Record<string, string> = {
-      park_outdoor: '#22c55e',      // green
-      family: '#f59e0b',            // amber
-      entertainment: '#a855f7',     // purple
-      food_cafe: '#f97316',         // orange
-      bench: '#6b7280',             // gray
-      pet_friendly: '#84cc16',      // lime
-      restroom: '#3b82f6',          // blue
-      gacha_machine: '#ec4899',     // pink
-      baby_changing: '#fbbf24',     // yellow
-      water_fountain: '#06b6d4',    // cyan
-      playground: '#f43f5e',        // rose
-      anime_spot: '#8b5cf6',        // violet
-      photo_spot: '#10b981',        // emerald
-      vending_machine: '#14b8a6',   // teal
-      other: '#6b7280',             // gray
-    };
-    
-    return colors[category] || colors.other;
-  };
-
   return (
     <section className="absolute inset-0 bg-gray-100 dark:bg-gray-800">
       <div ref={mapRef} className="w-full h-full" />
@@ -476,59 +536,31 @@ export const GoogleMap = forwardRef<GoogleMapRef, GoogleMapProps>(({ spots, onAd
           </div>
         </div>
       )}
-
-      {/* Instructions overlay - Show different message based on auth state */}
-      <div className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg shadow-md">
-        <p className="text-xs text-gray-600 dark:text-gray-300 flex items-center">
-          <MapPin className="w-3 h-3 mr-1" />
-          {user && !user.isAnonymous 
-            ? '地図を長押しでスポット追加'
-            : 'Googleログインでスポット追加可能'}
-        </p>
-      </div>
-
-      {/* Location button */}
+      
+      {/* Add spot button - bottom right */}
       <button
-        onClick={handleGetLocation}
-        className="absolute bottom-20 right-4 p-3 bg-white dark:bg-gray-700 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-        aria-label="現在地を取得"
+        onClick={() => onAddSpot()}
+        className="absolute bottom-6 right-6 w-14 h-14 bg-terracotta-500 text-white rounded-full shadow-lg hover:bg-terracotta-600 transition-all duration-200 flex items-center justify-center group hover:scale-105 active:scale-95 z-10"
+        aria-label="スポットを追加"
       >
-        <Navigation className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <Plus className="w-6 h-6" />
+        <span className="absolute right-full mr-2 whitespace-nowrap bg-gray-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          スポットを追加
+        </span>
       </button>
 
-      {/* Add button - Only show if user is authenticated with Google */}
-      {user && !user.isAnonymous && (
-        <button
-          onClick={() => onAddSpot()}
-          className="absolute bottom-4 right-4 p-3 bg-terracotta-500 dark:bg-terracotta-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-terracotta-600 dark:hover:bg-terracotta-700 transition-all"
-          aria-label="スポットを追加"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
-      )}
-      
-      {/* Show hint for non-authenticated users */}
-      {(!user || user.isAnonymous) && (
-        <div className="absolute bottom-4 right-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg max-w-xs">
-          <p className="text-xs text-gray-600 dark:text-gray-400">
-            スポットを追加するには
-            <button 
-              onClick={() => {
-                const profileButton = document.querySelector('[data-testid="profile-button"]') as HTMLButtonElement;
-                if (profileButton) {
-                  profileButton.click();
-                }
-              }}
-              className="text-terracotta-500 dark:text-terracotta-400 underline ml-1"
-            >
-              Googleでログイン
-            </button>
-            してください
-          </p>
-        </div>
-      )}
+      {/* Current location button - bottom right, above add spot button */}
+      <button
+        onClick={handleGetLocation}
+        className="absolute bottom-24 right-6 w-12 h-12 bg-white dark:bg-gray-700 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center group hover:scale-105 active:scale-95 z-10"
+        aria-label="現在地を表示"
+      >
+        <Navigation className="w-5 h-5 text-gray-700 dark:text-white" />
+        <span className="absolute right-full mr-2 whitespace-nowrap bg-gray-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          現在地を表示
+        </span>
+      </button>
     </section>
   );
-});
-
-GoogleMap.displayName = 'GoogleMap';
+}
+);

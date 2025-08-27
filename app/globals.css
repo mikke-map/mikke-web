@@ -395,4 +395,80 @@
     background-color: var(--neutral-800);
     color: var(--neutral-300);
   }
+
+  /* Slide down animation for filter sections */
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slide in animation for inline filter expansion */
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  /* Slide right animation for pushed items */
+  .animate-slide-right {
+    animation: slide-right 0.3s ease-out;
+  }
+
+  @keyframes slide-right {
+    from {
+      transform: translateX(-20px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  /* Slide out animation for collapsing items */
+  .animate-slide-out {
+    animation: slide-out 0.3s ease-out;
+  }
+
+  @keyframes slide-out {
+    from {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-10px) scale(0.95);
+    }
+  }
+
+  /* Slide left animation for items moving back */
+  .animate-slide-left {
+    animation: slide-left 0.3s ease-out;
+  }
+
+  @keyframes slide-left {
+    from {
+      transform: translateX(20px);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 }
