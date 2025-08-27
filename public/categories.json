@@ -1,0 +1,379 @@
+{
+  "categories": [
+    {
+      "id": "park_outdoor",
+      "displayName": "公園・屋外施設",
+      "icon": "tree.fill",
+      "color": {
+        "red": 88,
+        "green": 166,
+        "blue": 124,
+        "hex": "#58A67C"
+      },
+      "subCategories": [
+        {
+          "id": "park",
+          "name": "公園",
+          "tags": ["ベンチあり", "水飲み場あり", "トイレあり", "遊具あり", "ペット可"]
+        },
+        {
+          "id": "plaza",
+          "name": "広場",
+          "tags": []
+        },
+        {
+          "id": "observation_deck",
+          "name": "展望台",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "family",
+      "displayName": "子育て・ファミリー",
+      "icon": "figure.2.and.child.holdinghands",
+      "color": {
+        "red": 228,
+        "green": 133,
+        "blue": 158,
+        "hex": "#E4859E"
+      },
+      "subCategories": [
+        {
+          "id": "diaper_changing",
+          "name": "おむつ替えスポット",
+          "tags": []
+        },
+        {
+          "id": "nursing_room",
+          "name": "授乳室",
+          "tags": []
+        },
+        {
+          "id": "kids_space",
+          "name": "キッズスペース",
+          "tags": []
+        },
+        {
+          "id": "stroller_rental",
+          "name": "ベビーカー貸出",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "entertainment",
+      "displayName": "エンターテインメント",
+      "icon": "gamecontroller.fill",
+      "color": {
+        "red": 147,
+        "green": 112,
+        "blue": 165,
+        "hex": "#9370A5"
+      },
+      "subCategories": [
+        {
+          "id": "gacha",
+          "name": "ガチャスポット",
+          "tags": ["アニメ系", "おもちゃ系", "ご当地系", "レトロ系"]
+        },
+        {
+          "id": "game_center",
+          "name": "ゲームセンター",
+          "tags": []
+        },
+        {
+          "id": "karaoke",
+          "name": "カラオケ",
+          "tags": []
+        },
+        {
+          "id": "cinema",
+          "name": "映画館",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "food_drink",
+      "displayName": "飲食店・カフェ",
+      "icon": "fork.knife",
+      "color": {
+        "red": 219,
+        "green": 142,
+        "blue": 74,
+        "hex": "#DB8E4A"
+      },
+      "subCategories": [
+        {
+          "id": "restaurant",
+          "name": "レストラン",
+          "tags": ["和食", "洋食", "中華", "イタリアン", "フレンチ"]
+        },
+        {
+          "id": "cafe",
+          "name": "カフェ",
+          "tags": ["コーヒー専門", "スイーツ", "ペット可"]
+        },
+        {
+          "id": "bar",
+          "name": "バー",
+          "tags": ["ナチュラルワイン", "クラフトビール", "日本酒", "カクテル"]
+        },
+        {
+          "id": "fastfood",
+          "name": "ファストフード",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "shopping",
+      "displayName": "ショッピング",
+      "icon": "bag.fill",
+      "color": {
+        "red": 108,
+        "green": 142,
+        "blue": 191,
+        "hex": "#6C8EBF"
+      },
+      "subCategories": [
+        {
+          "id": "anime_character",
+          "name": "アニメ・キャラクター",
+          "tags": ["公式ショップ", "中古", "フィギュア", "グッズ"]
+        },
+        {
+          "id": "general_goods",
+          "name": "雑貨",
+          "tags": []
+        },
+        {
+          "id": "souvenir",
+          "name": "お土産",
+          "tags": []
+        },
+        {
+          "id": "convenience_store",
+          "name": "コンビニ",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "tourism",
+      "displayName": "観光・撮影",
+      "icon": "camera.fill",
+      "color": {
+        "red": 208,
+        "green": 171,
+        "blue": 75,
+        "hex": "#D0AB4B"
+      },
+      "subCategories": [
+        {
+          "id": "photo_spot",
+          "name": "フォトスポット",
+          "tags": ["景色", "インスタ映え", "歴史的", "季節限定"]
+        },
+        {
+          "id": "tourist_attraction",
+          "name": "観光名所",
+          "tags": []
+        },
+        {
+          "id": "viewpoint",
+          "name": "展望スポット",
+          "tags": []
+        },
+        {
+          "id": "anime_pilgrimage",
+          "name": "聖地巡礼",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "vending_machine",
+      "displayName": "自動販売機",
+      "icon": "cup.and.saucer.fill",
+      "color": {
+        "red": 190,
+        "green": 89,
+        "blue": 72,
+        "hex": "#BE5948"
+      },
+      "subCategories": [
+        {
+          "id": "beverage",
+          "name": "飲料",
+          "tags": []
+        },
+        {
+          "id": "food",
+          "name": "食品",
+          "tags": []
+        },
+        {
+          "id": "ice_cream",
+          "name": "アイス",
+          "tags": []
+        },
+        {
+          "id": "other",
+          "name": "その他",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "pet",
+      "displayName": "ペット関連",
+      "icon": "pawprint.fill",
+      "color": {
+        "red": 156,
+        "green": 116,
+        "blue": 89,
+        "hex": "#9C7459"
+      },
+      "subCategories": [
+        {
+          "id": "dog_park",
+          "name": "ドッグラン",
+          "tags": []
+        },
+        {
+          "id": "pet_friendly",
+          "name": "ペット可施設",
+          "tags": []
+        },
+        {
+          "id": "veterinary",
+          "name": "動物病院",
+          "tags": []
+        },
+        {
+          "id": "pet_shop",
+          "name": "ペットショップ",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "public_facility",
+      "displayName": "公共施設",
+      "icon": "building.2.fill",
+      "color": {
+        "red": 132,
+        "green": 132,
+        "blue": 132,
+        "hex": "#848484"
+      },
+      "subCategories": [
+        {
+          "id": "restroom",
+          "name": "トイレ",
+          "tags": ["多目的", "車椅子対応", "おむつ替え台あり"]
+        },
+        {
+          "id": "water_fountain",
+          "name": "水飲み場",
+          "tags": []
+        },
+        {
+          "id": "rest_area",
+          "name": "休憩所",
+          "tags": []
+        },
+        {
+          "id": "smoking_area",
+          "name": "喫煙所",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "transportation",
+      "displayName": "交通・駐車",
+      "icon": "car.fill",
+      "color": {
+        "red": 89,
+        "green": 156,
+        "blue": 146,
+        "hex": "#599C92"
+      },
+      "subCategories": [
+        {
+          "id": "parking",
+          "name": "駐車場",
+          "tags": ["無料", "有料", "バイク可", "障害者用"]
+        },
+        {
+          "id": "bicycle_parking",
+          "name": "駐輪場",
+          "tags": []
+        },
+        {
+          "id": "bus_stop",
+          "name": "バス停",
+          "tags": []
+        },
+        {
+          "id": "taxi_stand",
+          "name": "タクシー乗り場",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "others",
+      "displayName": "その他",
+      "icon": "star.fill",
+      "color": {
+        "red": 180,
+        "green": 155,
+        "blue": 120,
+        "hex": "#B49B78"
+      },
+      "subCategories": [
+        {
+          "id": "event_venue",
+          "name": "イベント会場",
+          "tags": []
+        },
+        {
+          "id": "seasonal",
+          "name": "季節限定",
+          "tags": []
+        },
+        {
+          "id": "unique_spot",
+          "name": "ユニークスポット",
+          "tags": []
+        }
+      ]
+    }
+  ],
+  "itemStatus": [
+    {
+      "id": "active",
+      "displayName": "利用可能"
+    },
+    {
+      "id": "inactive",
+      "displayName": "利用不可"
+    },
+    {
+      "id": "maintenance",
+      "displayName": "メンテナンス中"
+    },
+    {
+      "id": "unknown",
+      "displayName": "不明"
+    },
+    {
+      "id": "seasonal",
+      "displayName": "季節限定"
+    }
+  ]
+}

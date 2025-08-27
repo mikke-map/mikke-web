@@ -1,0 +1,398 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary terracotta color palette */
+    --primary-color: #823D2C;
+    --primary-dark: #5C2B1E;
+    --primary-light: #B5836C;
+    --primary-50: #FAF5F3;
+    --primary-100: #F5EBE7;
+    --primary-200: #EBD7CF;
+    
+    /* Warm background colors */
+    --bg-primary: #F9F2EF;
+    --bg-secondary: #FEFCFB;
+    --bg-tertiary: #F7EDE8;
+    --bg-card: #FFFFFF;
+    --bg-overlay: rgba(130, 61, 44, 0.1);
+    
+    /* Neutral colors with warm undertones */
+    --text-primary: #342316;
+    --text-secondary: #514135;
+    --text-muted: #6E5F54;
+    --text-disabled: #A89B92;
+    
+    /* Border colors */
+    --border-color: #E8E4E0;
+    --border-light: #F5F3F1;
+    --border-focus: #823D2C;
+    
+    /* Other semantic colors */
+    --secondary-color: #8B7D73;
+    --accent-color: #06d6a0;
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    --info-color: #06b6d4;
+  }
+
+  [data-theme="dark"] {
+    /* Dark mode with warm undertones */
+    --bg-primary: #1A0F0C;
+    --bg-secondary: #2D1B15;
+    --bg-tertiary: #3D2A20;
+    --bg-card: #2D1B15;
+    --bg-overlay: rgba(249, 242, 239, 0.1);
+    
+    --text-primary: #F5F3F1;
+    --text-secondary: #DBD5CF;
+    --text-muted: #A89B92;
+    --text-disabled: #6E5F54;
+    
+    --border-color: #3D2A20;
+    --border-light: #514135;
+    --border-focus: #B5836C;
+    
+    /* Adjust primary colors for dark mode */
+    --primary-color: #B5836C;
+    --primary-light: #CB9B87;
+  }
+
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Font variable definitions */
+  .font-serif {
+    font-family: var(--font-playfair-display), Georgia, serif;
+  }
+  
+  .font-sans {
+    font-family: var(--font-open-sans), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  .font-sans-jp {
+    font-family: var(--font-noto-sans-jp), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+@layer components {
+  /* Button Styles */
+  .btn-primary {
+    @apply bg-primary text-white font-medium py-3 px-6 rounded-xl 
+           transition-all duration-200 
+           hover:bg-primary-700 hover:shadow-soft 
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-primary)] 
+           font-medium py-3 px-6 rounded-xl 
+           transition-all duration-200 
+           hover:bg-[var(--bg-tertiary)] hover:border-[var(--border-focus)] hover:shadow-soft
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply text-[var(--text-secondary)] font-medium py-2 px-4 rounded-lg 
+           transition-all duration-200 
+           hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2;
+  }
+
+  /* Input Styles */
+  .input-field {
+    @apply w-full px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] 
+           rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)]
+           transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-[var(--border-focus)]
+           hover:border-[var(--text-muted)];
+  }
+
+  .textarea-field {
+    @apply w-full px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] 
+           rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)]
+           transition-all duration-200 resize-none
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-[var(--border-focus)]
+           hover:border-[var(--text-muted)];
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-[var(--bg-card)] rounded-2xl shadow-soft border border-[var(--border-light)] p-6;
+  }
+
+  .card-hover {
+    @apply bg-[var(--bg-card)] rounded-2xl shadow-soft border border-[var(--border-light)] 
+           p-6 transition-all duration-200 
+           hover:shadow-soft-lg hover:-translate-y-0.5;
+  }
+
+  /* Typography Styles */
+  .heading-display {
+    @apply font-serif text-display-md text-[var(--text-primary)] font-bold tracking-tight;
+  }
+
+  .heading-large {
+    @apply font-serif text-heading-lg text-[var(--text-primary)] font-bold;
+  }
+
+  .heading-medium {
+    @apply font-serif text-heading-md text-[var(--text-primary)] font-semibold;
+  }
+
+  .heading-small {
+    @apply font-serif text-heading-sm text-[var(--text-primary)] font-semibold;
+  }
+
+  .body-large {
+    @apply font-sans-jp text-lg text-[var(--text-primary)] leading-relaxed;
+  }
+
+  .body-medium {
+    @apply font-sans-jp text-base text-[var(--text-primary)] leading-relaxed;
+  }
+
+  .body-small {
+    @apply font-sans-jp text-sm text-[var(--text-secondary)] leading-relaxed;
+  }
+
+  .caption {
+    @apply font-sans-jp text-xs text-[var(--text-muted)] leading-normal;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    @apply inline-block w-8 h-8 border-4 border-primary-200 border-t-primary rounded-full animate-spin;
+  }
+
+  /* Filter Pills */
+  .filter-pill {
+    @apply flex items-center px-4 py-2 rounded-full 
+           transition-all duration-200 
+           border border-[var(--border-color)]
+           hover:border-[var(--border-focus)] hover:shadow-soft;
+  }
+
+  .filter-pill-active {
+    @apply bg-primary text-white border-primary shadow-soft;
+  }
+
+  .filter-pill-inactive {
+    @apply bg-[var(--bg-card)] text-[var(--text-secondary)] 
+           hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)];
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Additional color utilities for our design system */
+  .bg-primary-25 {
+    background-color: rgba(250, 245, 243, 0.5);
+  }
+
+  [data-theme="dark"] .bg-primary-25 {
+    background-color: rgba(181, 131, 108, 0.1);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Additional z-index utilities */
+  .z-45 {
+    z-index: 45;
+  }
+
+  .z-60 {
+    z-index: 60;
+  }
+
+  /* Hamburger menu animations */
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slideInFromLeft 0.3s ease-out forwards;
+  }
+
+  /* Profile screen specific styles */
+  .profile-gradient {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-primary) 100%);
+  }
+
+  .profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .profile-stats-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .profile-avatar {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 4px solid white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .profile-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+  }
+
+  .profile-badge-guest {
+    background-color: rgb(254 243 199);
+    color: rgb(146 64 14);
+  }
+
+  .profile-badge-authenticated {
+    background-color: rgb(220 252 231);
+    color: rgb(21 128 61);
+  }
+
+  .profile-badge-offline {
+    background-color: var(--neutral-100);
+    color: var(--neutral-600);
+  }
+
+  /* Modal animations and enhancements */
+  .modal-overlay-enter {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+
+  .modal-overlay-enter-active {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+    transition: opacity 300ms ease-out, backdrop-filter 300ms ease-out;
+  }
+
+  .modal-content-enter {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+
+  .modal-content-enter-active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: opacity 300ms ease-out, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Enhanced scrollbar for modal content */
+  .modal-content-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.primary.200') theme('colors.primary.50');
+  }
+
+  .modal-content-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .modal-content-scroll::-webkit-scrollbar-track {
+    background: theme('colors.primary.50');
+    border-radius: 3px;
+  }
+
+  .modal-content-scroll::-webkit-scrollbar-thumb {
+    background: theme('colors.primary.200');
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+
+  .modal-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.primary.300');
+  }
+
+  /* Mobile modal optimizations */
+  @media (max-width: 640px) {
+    .modal-mobile-full {
+      margin: 0.75rem;
+      max-height: calc(100vh - 1.5rem);
+      border-radius: 1.5rem;
+    }
+  }
+
+  /* Smooth backdrop blur for better performance */
+  @supports (backdrop-filter: blur(1px)) {
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+  }
+
+  /* Dark mode adjustments for profile */
+  [data-theme="dark"] .profile-badge-guest {
+    background-color: rgba(146, 64, 14, 0.2);
+    color: rgb(251 191 36);
+  }
+
+  [data-theme="dark"] .profile-badge-authenticated {
+    background-color: rgba(21, 128, 61, 0.2);
+    color: rgb(74 222 128);
+  }
+
+  [data-theme="dark"] .profile-badge-offline {
+    background-color: var(--neutral-800);
+    color: var(--neutral-300);
+  }
+}
