@@ -20,6 +20,7 @@ import { useFirebaseSpotStore } from '@/stores/firebaseSpotStore';
 import { BadgeCelebrationModal } from '@/components/features/BadgeCelebrationModal';
 import { useBadges } from '@/contexts/BadgeContext';
 import DevelopmentStageModal from '@/components/ui/DevelopmentStageModal';
+import PolicyAgreementModal from '@/components/ui/PolicyAgreementModal';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,7 @@ export default function HomePage() {
   const [visibleSpotIds, setVisibleSpotIds] = useState<string[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showDevelopmentStage, setShowDevelopmentStage] = useState(false);
+  const [showPolicyAgreement, setShowPolicyAgreement] = useState(false);
   const mapRef = useRef<{ clearTempMarker: () => void } | null>(null);
   
   const { theme } = useThemeStore();
@@ -70,14 +72,25 @@ export default function HomePage() {
   }, [theme]);
 
   useEffect(() => {
-    // Check if user has seen the development stage notification
+    // Check policy agreement first, then development stage
+    const hasAgreedToPolicy = localStorage.getItem('hasAgreedToPolicy');
     const hasSeenDevStage = localStorage.getItem('hasSeenDevelopmentStage');
-    if (!hasSeenDevStage && !isLoading) {
-      // Show the modal after a short delay when loading is complete
-      const timer = setTimeout(() => {
-        setShowDevelopmentStage(true);
-      }, 800);
-      return () => clearTimeout(timer);
+    
+    if (!isLoading) {
+      // Show policy agreement modal first if not agreed
+      if (!hasAgreedToPolicy) {
+        const timer = setTimeout(() => {
+          setShowPolicyAgreement(true);
+        }, 800);
+        return () => clearTimeout(timer);
+      } 
+      // Then show development stage modal if policy is agreed but dev stage not seen
+      else if (!hasSeenDevStage) {
+        const timer = setTimeout(() => {
+          setShowDevelopmentStage(true);
+        }, 800);
+        return () => clearTimeout(timer);
+      }
     }
   }, [isLoading]);
 
@@ -140,6 +153,21 @@ export default function HomePage() {
     setShowDevelopmentStage(false);
     // Mark as seen so it won't show again
     localStorage.setItem('hasSeenDevelopmentStage', 'true');
+  };
+
+  const handleAgreePolicy = () => {
+    setShowPolicyAgreement(false);
+    // Mark policy as agreed
+    localStorage.setItem('hasAgreedToPolicy', 'true');
+    
+    // Now check if we need to show development stage modal
+    const hasSeenDevStage = localStorage.getItem('hasSeenDevelopmentStage');
+    if (!hasSeenDevStage) {
+      // Show development stage modal after a short delay
+      setTimeout(() => {
+        setShowDevelopmentStage(true);
+      }, 500);
+    }
   };
 
   // Get filtered spots from the appropriate store
@@ -275,7 +303,13 @@ export default function HomePage() {
         }}
       />
 
-      {/* Development Stage Modal */}
+      {/* Policy Agreement Modal - Shows first */}
+      <PolicyAgreementModal
+        isOpen={showPolicyAgreement}
+        onAgree={handleAgreePolicy}
+      />
+
+      {/* Development Stage Modal - Shows after policy agreement */}
       <DevelopmentStageModal
         isOpen={showDevelopmentStage}
         onClose={handleCloseDevelopmentStage}
