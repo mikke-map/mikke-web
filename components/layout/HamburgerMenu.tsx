@@ -20,7 +20,8 @@ export function HamburgerMenu({ isOpen, onClose, currentScreen, onScreenChange, 
     if (isOpen) {
       onClose();
     }
-  }, [currentScreen, isOpen, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentScreen]);
 
   // Handle menu visibility and animations
   useEffect(() => {
