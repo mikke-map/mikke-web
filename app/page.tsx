@@ -194,18 +194,18 @@ export default function HomePage() {
   }
 
   return (
-    <div className="app min-h-screen flex flex-col">
+    <div className="app h-screen flex flex-col overflow-hidden">
       {/* Header */}
       <Header />
 
       {/* Main Content */}
       {currentScreen === 'home' && (
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden min-h-0">
           {/* Filter Section with Menu Button */}
           <FilterSection onMenuClick={() => setIsMenuOpen(true)} />
 
           {/* Map Section - Takes remaining space above SpotList */}
-          <div className="flex-1 relative overflow-hidden">
+          <div className="flex-1 relative overflow-hidden min-h-0">
             {/* Map Section - Use GoogleMap when API key is available */}
             {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
               <GoogleMap 

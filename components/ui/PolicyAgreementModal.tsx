@@ -99,16 +99,16 @@ export default function PolicyAgreementModal({ isOpen, onAgree }: PolicyAgreemen
             </div>
           </div>
 
-          <div className="p-6 border-t border-neutral-200 dark:border-neutral-700 flex gap-3 justify-end">
+          <div className="p-6 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={onAgree}
-              className="px-6 py-3 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors font-medium"
+              className="px-4 sm:px-6 py-3 rounded-lg bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700 transition-colors font-medium text-sm sm:text-base whitespace-nowrap min-w-[120px] shadow-md"
             >
               同意する
             </button>
             <button
               onClick={handleDisagree}
-              className="px-6 py-3 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors font-medium"
+              className="px-4 sm:px-6 py-3 rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors font-medium text-xs sm:text-base whitespace-nowrap"
             >
               同意せずページを閉じる
             </button>

@@ -48,6 +48,8 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  userScalable: 'no',
+  viewportFit: 'cover',
   themeColor: '#823D2C',
 };
 
@@ -57,8 +59,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" className={`${notoSansJP.variable} ${playfairDisplay.variable} ${openSans.variable}`}>
-      <body className="font-sans antialiased bg-background text-neutral-800">
+    <html lang="ja" className={`${notoSansJP.variable} ${playfairDisplay.variable} ${openSans.variable} h-full overflow-hidden`}>
+      <body className="font-sans antialiased bg-background text-neutral-800 h-full overflow-hidden">
         <AuthProvider>
           <BadgeProvider>
             {children}

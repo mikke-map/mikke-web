@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent iOS bounce scrolling and fix viewport height */
+html {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
+body {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
+/* Support for iOS safe areas */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .app {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 @layer base {
   :root {
     /* Primary terracotta color palette */
