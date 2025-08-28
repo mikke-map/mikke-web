@@ -236,7 +236,7 @@ export default function HomePage() {
       )}
 
       {currentScreen === 'ranking' && (
-        <main className="flex-1">
+        <main className="flex-1 overflow-y-auto">
           <RankingScreen 
             onMenuClick={() => setIsMenuOpen(true)}
             onViewUserProfile={(userId) => {
@@ -249,7 +249,7 @@ export default function HomePage() {
       )}
 
       {currentScreen === 'profile' && (
-        <main className="flex-1">
+        <main className="flex-1 overflow-y-auto">
           <ProfileScreen 
             onNavigateToMySpots={() => setCurrentScreen('mySpots')}
             onMenuClick={() => setIsMenuOpen(true)}
@@ -258,7 +258,7 @@ export default function HomePage() {
       )}
 
       {currentScreen === 'mySpots' && (
-        <main className="flex-1">
+        <main className="flex-1 overflow-y-auto">
           <MySpots 
             onBack={() => setCurrentScreen('profile')}
             onCreateSpot={() => handleAddSpot()}
