@@ -41,6 +41,7 @@ export function AddSpotModal({
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLocationSource, setShowLocationSource] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   // Update location when initialLocation changes
   useEffect(() => {
@@ -61,18 +62,42 @@ export function AddSpotModal({
 
   const canSubmit = spotName.trim() && location.latitude !== 0 && location.longitude !== 0;
 
-  const handleGetLocation = () => {
+  const handleGetLocation = async () => {
     if (navigator.geolocation) {
+      setIsGettingLocation(true);
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          // Try to get address using reverse geocoding
+          let address = undefined;
+          try {
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&language=ja`
+            );
+            if (response.ok) {
+              const data = await response.json();
+              if (data.results && data.results.length > 0) {
+                // Get formatted address
+                address = data.results[0].formatted_address;
+              }
+            }
+          } catch (error) {
+            console.error('Failed to get address:', error);
+          }
+          
           setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            address: undefined,
+            latitude: lat,
+            longitude: lng,
+            address: address,
           });
-          alert('現在地を取得しました！');
+          setIsGettingLocation(false);
+          setShowLocationSource(true);
+          setTimeout(() => setShowLocationSource(false), 3000);
         },
         (error) => {
+          setIsGettingLocation(false);
           console.error('Failed to get location:', error);
           alert('現在地の取得に失敗しました。ブラウザの位置情報設定を確認してください。');
         }
@@ -221,13 +246,15 @@ export function AddSpotModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
           {/* Location notification */}
-          {showLocationSource && initialLocation && (
-            <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+          {showLocationSource && (
+            <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 animate-fade-in">
               <p className="body-small text-primary flex items-center">
                 <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mr-3">
                   <MapPin className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-medium">地図上で選択した場所が設定されています</span>
+                <span className="font-medium">
+                  {initialLocation ? '地図上で選択した場所が設定されています' : '現在地を取得しました'}
+                </span>
               </p>
             </div>
           )}
@@ -309,7 +336,7 @@ export function AddSpotModal({
               位置情報 <span className="text-primary">*</span>
             </h3>
             <div className="bg-[var(--bg-tertiary)] rounded-xl p-6">
-              {location ? (
+              {location && location.latitude !== 0 && location.longitude !== 0 ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[var(--bg-card)] rounded-lg p-3">
@@ -333,6 +360,23 @@ export function AddSpotModal({
                       </p>
                     </div>
                   )}
+                  <button
+                    onClick={handleGetLocation}
+                    disabled={isGettingLocation}
+                    className="btn-secondary w-full flex items-center justify-center"
+                  >
+                    {isGettingLocation ? (
+                      <>
+                        <div className="loading-spinner w-4 h-4 mr-2" />
+                        取得中...
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="w-4 h-4 mr-2" />
+                        現在地で更新
+                      </>
+                    )}
+                  </button>
                 </div>
               ) : (
                 <div className="text-center py-6">
@@ -341,10 +385,20 @@ export function AddSpotModal({
                   </p>
                   <button
                     onClick={handleGetLocation}
+                    disabled={isGettingLocation}
                     className="btn-primary mx-auto"
                   >
-                    <MapPin className="w-4 h-4 mr-2" />
-                    現在地を取得
+                    {isGettingLocation ? (
+                      <>
+                        <div className="loading-spinner w-4 h-4 mr-2" />
+                        取得中...
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="w-4 h-4 mr-2" />
+                        現在地を取得
+                      </>
+                    )}
                   </button>
                 </div>
               )}
