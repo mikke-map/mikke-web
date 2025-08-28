@@ -204,7 +204,7 @@ export default function HomePage() {
           {/* Filter Section with Menu Button */}
           <FilterSection onMenuClick={() => setIsMenuOpen(true)} />
 
-          {/* Map Section - Takes remaining space above SpotList */}
+          {/* Map Section - Full viewport with SpotList overlay */}
           <div className="flex-1 relative overflow-hidden min-h-0">
             {/* Map Section - Use GoogleMap when API key is available */}
             {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
@@ -223,10 +223,8 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Spot List Section - Fixed height at bottom, no gaps */}
-          <div className="h-[35vh] max-h-[350px] flex-shrink-0">
+            
+            {/* Spot List Section - Absolute positioned bottom sheet */}
             <SpotList 
               spots={visibleSpots}
               onSpotClick={handleSpotClick}

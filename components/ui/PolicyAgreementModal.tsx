@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react';
 import { X, ChevronDown, ChevronUp, FileText, Shield } from 'lucide-react';
-import { TERMS_OF_SERVICE, PRIVACY_POLICY } from '../constant/constant';
 
 interface PolicyAgreementModalProps {
   isOpen: boolean;
   onAgree: () => void;
 }
+
+const TERMS_OF_SERVICE = `利用規約の内容がここに入ります。`;
+const PRIVACY_POLICY = `プライバシーポリシーの内容がここに入ります。`;
 
 export default function PolicyAgreementModal({ isOpen, onAgree }: PolicyAgreementModalProps) {
   const [isTermsExpanded, setIsTermsExpanded] = useState(false);

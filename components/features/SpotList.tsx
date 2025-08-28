@@ -1,7 +1,7 @@
 'use client';
 
-import { List, LayoutGrid, MapPin, ThumbsUp, Eye, Clock, Image as ImageIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { List, LayoutGrid, MapPin, ThumbsUp, Eye, Clock, Image as ImageIcon, ChevronUp } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { Spot, SpotCategory, useSpotStore } from '@/stores/spotStore';
 import { useCategoryStore } from '@/stores/categoryStore';
 import Image from 'next/image';
@@ -11,14 +11,104 @@ interface SpotListProps {
   onSpotClick: (spotId: string) => void;
 }
 
+type SheetState = 'collapsed' | 'expanded';
+
 export function SpotList({ spots, onSpotClick }: SpotListProps) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [sheetState, setSheetState] = useState<SheetState>('collapsed');
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [currentY, setCurrentY] = useState(0);
+  const containerRef = useRef<HTMLElement>(null);
   const { currentFilter } = useSpotStore();
   const { getCategoryById, getSubCategory, initialize } = useCategoryStore();
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Sheet height mappings
+  const getSheetHeight = (state: SheetState): string => {
+    switch (state) {
+      case 'collapsed':
+        return '35vh';
+      case 'expanded':
+        return '80vh';
+      default:
+        return '35vh';
+    }
+  };
+
+  const handleDragStart = (clientY: number) => {
+    setIsDragging(true);
+    setDragStartY(clientY);
+    setCurrentY(0);
+  };
+
+  const handleDragMove = (clientY: number) => {
+    if (!isDragging) return;
+    const deltaY = dragStartY - clientY;
+    setCurrentY(deltaY);
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Determine next state based on drag distance
+    const threshold = 50; // pixels
+    
+    if (currentY > threshold) {
+      // Dragged up - expand
+      setSheetState('expanded');
+    } else if (currentY < -threshold) {
+      // Dragged down - collapse
+      setSheetState('collapsed');
+    }
+    
+    setCurrentY(0);
+  };
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleDragMove(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    handleDragEnd();
+  };
+
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientY);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      handleDragMove(e.clientY);
+    };
+
+    const handleMouseUp = () => {
+      handleDragEnd();
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragStartY, currentY, sheetState]);
+
+  // Remove click handler - only drag is allowed
 
   // Filter spots based on current filter
   const filteredSpots = currentFilter === 'all' 
@@ -41,20 +131,37 @@ export function SpotList({ spots, onSpotClick }: SpotListProps) {
   };
 
   return (
-    <section className="h-full flex flex-col bg-[var(--bg-card)] rounded-t-3xl shadow-2xl border-t border-[var(--border-light)]">
+    <section 
+      ref={containerRef}
+      className="absolute bottom-0 left-0 right-0 z-30 flex flex-col bg-[var(--bg-card)] rounded-t-3xl shadow-2xl border-t border-[var(--border-light)] transition-all duration-300 ease-out"
+      style={{ 
+        height: getSheetHeight(sheetState),
+        transform: isDragging ? `translateY(${-currentY}px)` : 'translateY(0)',
+        transition: isDragging ? 'none' : 'all 0.3s ease-out',
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
+    >
       {/* Drag Handle */}
-      <div className="flex justify-center py-2">
-        <div className="w-12 h-1 bg-[var(--border-light)] rounded-full" />
+      <div 
+        className="flex flex-col items-center justify-center py-3 cursor-grab touch-none select-none hover:bg-[var(--bg-tertiary)] transition-colors"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+      >
+        <div className="w-14 h-1.5 bg-gray-400 dark:bg-gray-600 rounded-full mb-1.5" />
       </div>
       
       {/* Header Section */}
-      <div className="bg-[var(--bg-card)] border-b border-[var(--border-light)] px-4 pb-3">
+      <div className="bg-[var(--bg-card)] border-b border-[var(--border-light)] px-4 pb-3 select-none">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="heading-medium">近くのスポット</h2>
-            <p className="caption mt-0.5">
-              {filteredSpots.length}件のスポットが見つかりました
-            </p>
+          <div className="flex items-center gap-2">
+            <div>
+              <h2 className="heading-medium">近くのスポット</h2>
+              <p className="caption mt-0.5">
+                {filteredSpots.length}件のスポットが見つかりました
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <button
