@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/layout/ScreenHeader';
 import { getTopUsers, getUserRank } from '@/lib/firebase/userStats';
 import { auth } from '@/lib/firebase/config';
 import { UserProfile } from '@/lib/firebase/userStats';
+import { UserProfileModal } from '@/components/features/UserProfileModal';
 
 interface RankingScreenProps {
   onMenuClick: () => void;
@@ -75,6 +76,8 @@ export const RankingScreen: React.FC<RankingScreenProps> = ({ onMenuClick, onVie
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUsingMockData, setIsUsingMockData] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const currentUser = auth.currentUser;
 
   const loadRankingData = useCallback(async () => {
@@ -116,10 +119,26 @@ export const RankingScreen: React.FC<RankingScreenProps> = ({ onMenuClick, onVie
   }, [loadRankingData]);
 
   const handleViewProfile = (userId: string) => {
+    // Find the user from the topUsers list
+    const user = topUsers.find(u => u.uid === userId);
+    if (user) {
+      setSelectedUser(user);
+      setIsProfileModalOpen(true);
+    } else {
+      console.log('User not found:', userId);
+    }
+  };
+
+  const handleCloseProfileModal = () => {
+    setIsProfileModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleViewFullProfile = (userId: string) => {
     if (onViewUserProfile) {
       onViewUserProfile(userId);
     } else {
-      console.log('Viewing user profile:', userId);
+      console.log('Viewing full user profile:', userId);
     }
   };
 
@@ -348,6 +367,16 @@ export const RankingScreen: React.FC<RankingScreenProps> = ({ onMenuClick, onVie
           )}
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      {selectedUser && (
+        <UserProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={handleCloseProfileModal}
+          user={selectedUser}
+          onViewFullProfile={handleViewFullProfile}
+        />
+      )}
     </div>
   );
 };

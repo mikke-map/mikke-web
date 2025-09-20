@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X, Home, Trophy, User, MapPin, Plus } from 'lucide-react';
+import { X, Home, Trophy, User, MapPin, Plus, ExternalLink } from 'lucide-react';
 
 interface HamburgerMenuProps {
   isOpen: boolean;
@@ -200,15 +200,26 @@ export function HamburgerMenu({ isOpen, onClose, currentScreen, onScreenChange, 
 
         {/* Menu Footer */}
         <div className={`absolute bottom-0 left-0 right-0 p-6 border-t border-[var(--border-light)] transform transition-all duration-300 ease-out
-                        ${isAnimating 
-                          ? 'translate-x-0 opacity-100' 
+                        ${isAnimating
+                          ? 'translate-x-0 opacity-100'
                           : '-translate-x-8 opacity-0'
                         }`}
              style={{ transitionDelay: isAnimating ? `${200 + menuItems.length * 50}ms` : '0ms' }}
         >
-          <div className="text-xs text-[var(--text-muted)] space-y-1">
-            <p>© 2024 Mikke</p>
-            <p>Version 1.0.0</p>
+          <div className="space-y-3">
+            <a
+              href="https://donghuahui45.wixsite.com/mikke2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-primary hover:text-primary-dark transition-colors duration-200"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="text-sm font-medium">運営会社について</span>
+            </a>
+            <div className="text-xs text-[var(--text-muted)] space-y-1">
+              <p>© 2024 Mikke</p>
+              <p>Version 1.0.0</p>
+            </div>
           </div>
         </div>
       </div>

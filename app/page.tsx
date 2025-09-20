@@ -12,6 +12,7 @@ import { AddSpotModal } from '@/components/features/AddSpotModal';
 import { SpotDetailModal } from '@/components/features/SpotDetailModal';
 import { ProfileScreen } from '@/components/features/ProfileScreen';
 import { MySpots } from '@/components/features/MySpots';
+import { EditSpotModal } from '@/components/features/EditSpotModal';
 import { RankingScreen } from '@/components/features/RankingScreen';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSpotStore } from '@/stores/spotStore';
@@ -33,6 +34,7 @@ export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showDevelopmentStage, setShowDevelopmentStage] = useState(false);
   const [showPolicyAgreement, setShowPolicyAgreement] = useState(false);
+  const [editingSpotId, setEditingSpotId] = useState<string | null>(null);
   const mapRef = useRef<{ clearTempMarker: () => void } | null>(null);
   
   const { theme } = useThemeStore();
@@ -196,7 +198,7 @@ export default function HomePage() {
   return (
     <div className="app h-screen flex flex-col overflow-hidden">
       {/* Header */}
-      <Header />
+      <Header onHomeClick={() => setCurrentScreen('home')} />
 
       {/* Main Content */}
       {currentScreen === 'home' && (
@@ -257,8 +259,9 @@ export default function HomePage() {
 
       {currentScreen === 'mySpots' && (
         <main className="flex-1 overflow-y-auto">
-          <MySpots 
+          <MySpots
             onBack={() => setCurrentScreen('profile')}
+            onEditSpot={(spotId) => setEditingSpotId(spotId)}
             onCreateSpot={() => handleAddSpot()}
             onMenuClick={() => setIsMenuOpen(true)}
           />
@@ -276,11 +279,25 @@ export default function HomePage() {
 
       {/* Modals */}
       {showAddSpot && (
-        <AddSpotModal 
+        <AddSpotModal
           isOpen={showAddSpot}
           onClose={handleCloseModals}
           initialLocation={addSpotLocation}
           useFirebase={useFirebase}
+        />
+      )}
+
+      {editingSpotId && (
+        <EditSpotModal
+          isOpen={!!editingSpotId}
+          onClose={() => setEditingSpotId(null)}
+          spotId={editingSpotId}
+          onUpdate={() => {
+            // Force refresh of spots data
+            if (useFirebase) {
+              window.location.reload(); // Simple refresh for now
+            }
+          }}
         />
       )}
 

@@ -3,13 +3,26 @@
 import { MapPin, Moon, Sun } from 'lucide-react';
 import { useThemeStore } from '@/stores/themeStore';
 
-export function Header() {
+interface HeaderProps {
+  onHomeClick?: () => void;
+}
+
+export function Header({ onHomeClick }: HeaderProps) {
   const { theme, toggleTheme } = useThemeStore();
+
+  const handleHomeNavigation = () => {
+    if (onHomeClick) {
+      onHomeClick();
+    }
+  };
 
   return (
     <header className="bg-[var(--bg-card)] border-b border-[var(--border-light)] shadow-soft safe-top">
       <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center space-x-3">
+        <div
+          className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={handleHomeNavigation}
+        >
           <div className="p-2 bg-primary-100 rounded-xl">
             <MapPin className="w-7 h-7 text-primary" />
           </div>
