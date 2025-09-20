@@ -5,7 +5,7 @@ import { X, MapPin, Upload, Loader2, Check } from 'lucide-react';
 import { CategorySelector } from '@/components/features/CategorySelector';
 import { updateSpot, getSpotById } from '@/lib/firebase/spots';
 import { FirebaseSpot } from '@/lib/firebase/spots';
-import { CategoryId } from '@/types';
+import { CategoryId } from '@/types/category';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface EditSpotModalProps {
@@ -40,36 +40,36 @@ export function EditSpotModal({
 
   // Load spot data when modal opens
   useEffect(() => {
+    const loadSpotData = async () => {
+      setIsLoading(true);
+      try {
+        const spot = await getSpotById(spotId);
+        if (spot) {
+          setOriginalSpot(spot);
+          setSpotName(spot.title);
+          setDescription(spot.description || '');
+          setSelectedCategory(spot.category.mainCategory as CategoryId);
+          setSelectedSubCategory(spot.category.subCategory);
+          setSelectedTags(spot.category.tags || []);
+          setLocation({
+            latitude: spot.location.latitude,
+            longitude: spot.location.longitude,
+            address: spot.location.address
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load spot data:', error);
+        alert('スポット情報の読み込みに失敗しました');
+        onClose();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (isOpen && spotId) {
       loadSpotData();
     }
-  }, [isOpen, spotId]);
-
-  const loadSpotData = async () => {
-    setIsLoading(true);
-    try {
-      const spot = await getSpotById(spotId);
-      if (spot) {
-        setOriginalSpot(spot);
-        setSpotName(spot.title);
-        setDescription(spot.description || '');
-        setSelectedCategory(spot.category.mainCategory as CategoryId);
-        setSelectedSubCategory(spot.category.subCategory);
-        setSelectedTags(spot.category.tags || []);
-        setLocation({
-          latitude: spot.location.latitude,
-          longitude: spot.location.longitude,
-          address: spot.location.address
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load spot data:', error);
-      alert('スポット情報の読み込みに失敗しました');
-      onClose();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isOpen, spotId, onClose]);
 
   const canSubmit = spotName.trim() && location.latitude !== 0 && location.longitude !== 0;
 
