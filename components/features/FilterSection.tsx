@@ -26,15 +26,15 @@ const filterCategories = [
   { id: 'all' as const, label: 'すべて', icon: MoreHorizontal },
   { id: 'park_outdoor' as CategoryId, label: '公園・屋外', icon: Trees },
   { id: 'family' as CategoryId, label: '子育て', icon: Baby },
-  { id: 'entertainment' as CategoryId, label: '娯楽', icon: Gamepad2 },
-  { id: 'food_drink' as CategoryId, label: '飲食', icon: Coffee },
-  { id: 'shopping' as CategoryId, label: '買い物', icon: ShoppingBag },
-  { id: 'tourism' as CategoryId, label: '観光', icon: Camera },
-  { id: 'vending_machine' as CategoryId, label: '自販機', icon: Package2 },
-  { id: 'pet' as CategoryId, label: 'ペット', icon: Dog },
+  // { id: 'entertainment' as CategoryId, label: '娯楽', icon: Gamepad2 },
+  // { id: 'food_drink' as CategoryId, label: '飲食', icon: Coffee },
+  // { id: 'shopping' as CategoryId, label: '買い物', icon: ShoppingBag },
+  // { id: 'tourism' as CategoryId, label: '観光', icon: Camera },
+  // { id: 'vending_machine' as CategoryId, label: '自販機', icon: Package2 },
+  // { id: 'pet' as CategoryId, label: 'ペット', icon: Dog },
   { id: 'public_facility' as CategoryId, label: '公共施設', icon: Building2 },
   { id: 'transportation' as CategoryId, label: '交通', icon: Car },
-  { id: 'others' as CategoryId, label: 'その他', icon: Sparkles },
+  // { id: 'others' as CategoryId, label: 'その他', icon: Sparkles },
 ];
 
 interface FilterSectionProps {

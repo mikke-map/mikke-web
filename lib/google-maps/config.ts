@@ -39,12 +39,14 @@ export const createMap = (
     fullscreenControl: true,
     zoomControl: true,
     mapId: 'DEMO_MAP_ID', // Required for AdvancedMarkerElement
+    // Prevent page zoom while allowing map zoom on mobile
+    gestureHandling: 'greedy', // Allow one-finger pan, pinch-to-zoom on map only
     // Note: styles cannot be used with mapId
     // Map styling should be configured in Google Cloud Console
   };
 
   return new google.maps.Map(element, { ...defaultOptions, ...options });
-};
+};;
 
 export const getCurrentLocation = (): Promise<GeolocationPosition> => {
   return new Promise((resolve, reject) => {

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHand
 import {
   Navigation, Plus, Trees, Baby, PartyPopper, Coffee,
   Armchair, PawPrint, Bath, Dices, BabyIcon, Droplets,
-  Sailboat, Camera, ShoppingBag, HelpCircle
+  Sailboat, Camera, ShoppingBag, HelpCircle, Locate
 } from 'lucide-react';
 import { loadGoogleMaps, createMap, geocodeLatLng, getCurrentLocation } from '@/lib/google-maps/config';
 import { FirebaseSpot } from '@/lib/firebase/spots';
@@ -502,21 +502,6 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
         if (map) {
           map.setCenter({ lat, lng });
           map.setZoom(15);
-
-          // Add user location marker with AdvancedMarkerElement
-          const userLocationPin = new google.maps.marker.PinElement({
-            background: '#4285F4',
-            borderColor: '#ffffff',
-            glyphColor: '#ffffff',
-            scale: 1.2,
-          });
-
-          new google.maps.marker.AdvancedMarkerElement({
-            position: { lat, lng },
-            map: map,
-            title: '現在地',
-            content: userLocationPin.element,
-          });
         }
       } catch (error) {
         console.error('Failed to get location:', error);
@@ -527,6 +512,16 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
     return (
       <section className="absolute inset-0 bg-gray-100 dark:bg-gray-800">
         <div ref={mapRef} className="w-full h-full" />
+
+        {/* Current Location Button */}
+        <button
+          onClick={handleGetLocation}
+          className="absolute top-20 right-4 bg-white dark:bg-gray-800 rounded-full p-3 shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
+          aria-label="現在地に移動"
+          title="現在地に移動"
+        >
+          <Locate className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+        </button>
 
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80">

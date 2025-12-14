@@ -6,17 +6,22 @@ import Image from 'next/image';
 
 interface ImageUploadProps {
   onImagesChange: (files: File[]) => void;
+  onExistingImagesChange?: (urls: string[]) => void;
   maxImages?: number;
   existingImages?: string[];
+  isEditMode?: boolean;
 }
 
-export function ImageUpload({ 
-  onImagesChange, 
+export function ImageUpload({
+  onImagesChange,
+  onExistingImagesChange,
   maxImages = 5,
-  existingImages = []
+  existingImages = [],
+  isEditMode = false
 }: ImageUploadProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>(existingImages);
+  const [deletedExistingImages, setDeletedExistingImages] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,24 +82,41 @@ export function ImageUpload({
   };
 
   const removeImage = (index: number) => {
-    // Check if it's a new file or existing image
-    const isNewFile = index >= existingImages.length;
-    
-    if (isNewFile) {
-      const fileIndex = index - existingImages.length;
-      const newFiles = selectedFiles.filter((_, i) => i !== fileIndex);
-      
-      // Revoke the object URL to free memory
-      URL.revokeObjectURL(previewUrls[index]);
-      
+    const imageUrl = previewUrls[index];
+    const isExistingImage = existingImages.includes(imageUrl);
+
+    if (isExistingImage) {
+      // Mark existing image for deletion
+      const newDeletedImages = [...deletedExistingImages, imageUrl];
+      setDeletedExistingImages(newDeletedImages);
+
+      // Remove from preview
       const newUrls = previewUrls.filter((_, i) => i !== index);
-      
-      setSelectedFiles(newFiles);
       setPreviewUrls(newUrls);
-      onImagesChange(newFiles);
+
+      // Notify parent about remaining existing images
+      if (onExistingImagesChange) {
+        const remainingExisting = existingImages.filter(url => !newDeletedImages.includes(url));
+        onExistingImagesChange(remainingExisting);
+      }
     } else {
-      // Handle existing image removal if needed
-      // For now, just remove from preview
+      // It's a new file
+      const fileIndex = selectedFiles.findIndex((_, i) => {
+        // Find the file that corresponds to this preview URL
+        const filePreviewIndex = previewUrls.indexOf(URL.createObjectURL(selectedFiles[i]));
+        return filePreviewIndex === index;
+      });
+
+      if (fileIndex !== -1) {
+        const newFiles = selectedFiles.filter((_, i) => i !== fileIndex);
+        // Revoke the object URL to free memory
+        URL.revokeObjectURL(previewUrls[index]);
+
+        setSelectedFiles(newFiles);
+        onImagesChange(newFiles);
+      }
+
+      // Remove from preview
       const newUrls = previewUrls.filter((_, i) => i !== index);
       setPreviewUrls(newUrls);
     }
@@ -200,10 +222,15 @@ export function ImageUpload({
                   </button>
                 </div>
                 
-                {/* New badge for newly selected images */}
-                {index >= existingImages.length && (
+                {/* New badge for newly selected images or deletion badge for existing */}
+                {!existingImages.includes(url) && (
                   <div className="absolute top-1 right-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full">
                     新規
+                  </div>
+                )}
+                {isEditMode && existingImages.includes(url) && (
+                  <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    既存
                   </div>
                 )}
               </div>

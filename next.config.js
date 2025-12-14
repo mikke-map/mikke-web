@@ -38,10 +38,12 @@ const nextConfig = {
         hostname: 'maps.googleapis.com',
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
   },
-};
+};;
 
 module.exports = withPWA(nextConfig);

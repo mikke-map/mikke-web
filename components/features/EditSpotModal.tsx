@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, MapPin, Upload, Loader2, Check } from 'lucide-react';
 import { CategorySelector } from '@/components/features/CategorySelector';
-import { updateSpot, getSpotById } from '@/lib/firebase/spots';
+import { ImageUpload } from '@/components/features/ImageUpload';
+import { updateSpot, getSpotById, uploadSpotImage, deleteSpotImage } from '@/lib/firebase/spots';
 import { FirebaseSpot } from '@/lib/firebase/spots';
 import { CategoryId } from '@/types/category';
 import { useAuth } from '@/contexts/AuthContext';
@@ -38,6 +39,11 @@ export function EditSpotModal({
   const [originalSpot, setOriginalSpot] = useState<FirebaseSpot | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Image management states
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
   // Load spot data when modal opens
   useEffect(() => {
     const loadSpotData = async () => {
@@ -56,6 +62,11 @@ export function EditSpotModal({
             longitude: spot.location.longitude,
             address: spot.location.address
           });
+          // Set existing images
+          setExistingImages(spot.images || []);
+          // Reset image management states
+          setNewImageFiles([]);
+          setImagesToDelete([]);
         }
       } catch (error) {
         console.error('Failed to load spot data:', error);
@@ -128,6 +139,32 @@ export function EditSpotModal({
         categoryData.tags = selectedTags;
       }
 
+      // Handle image uploads
+      const uploadedImageUrls: string[] = [];
+      for (const file of newImageFiles) {
+        try {
+          const url = await uploadSpotImage(file, spotId);
+          uploadedImageUrls.push(url);
+        } catch (error) {
+          console.error('Failed to upload image:', error);
+        }
+      }
+
+      // Handle image deletions
+      for (const imageUrl of imagesToDelete) {
+        try {
+          await deleteSpotImage(imageUrl);
+        } catch (error) {
+          console.error('Failed to delete image:', error);
+        }
+      }
+
+      // Combine existing images (minus deleted ones) with new uploaded images
+      const finalImages = [
+        ...existingImages.filter(url => !imagesToDelete.includes(url)),
+        ...uploadedImageUrls
+      ];
+
       // Build updates object
       const updates: Partial<FirebaseSpot> = {
         title: spotName,
@@ -138,6 +175,7 @@ export function EditSpotModal({
           longitude: location.longitude,
           address: location.address || '未設定',
         },
+        images: finalImages,
       };
 
       // Update spot in Firebase
@@ -279,10 +317,26 @@ export function EditSpotModal({
             </div>
           </div>
 
-          {/* Note about images */}
-          <div className="px-3 py-2 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 text-sm text-yellow-800 dark:text-yellow-200">
-            <p className="font-medium">注意:</p>
-            <p>現在、画像の編集はサポートされていません。画像を変更する場合は、新しいスポットとして追加してください。</p>
+          {/* Image Upload Section */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              画像
+            </label>
+            <ImageUpload
+              existingImages={existingImages}
+              onImagesChange={(files) => setNewImageFiles(files)}
+              onExistingImagesChange={(urls) => {
+                // Calculate which images were deleted
+                const deleted = existingImages.filter(url => !urls.includes(url));
+                setImagesToDelete(deleted);
+                setExistingImages(urls);
+              }}
+              maxImages={5}
+              isEditMode={true}
+            />
+            <p className="text-xs text-[var(--text-muted)] mt-2">
+              既存の画像を削除したり、新しい画像を追加できます（最大5枚）
+            </p>
           </div>
         </div>
 

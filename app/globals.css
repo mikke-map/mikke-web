@@ -19,6 +19,8 @@ body {
   height: 100%;
   height: 100vh;
   height: -webkit-fill-available;
+  /* Prevent pinch-to-zoom on mobile while allowing map zoom */
+  touch-action: pan-x pan-y;
 }
 
 /* Support for iOS safe areas */

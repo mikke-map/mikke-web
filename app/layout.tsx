@@ -31,6 +31,12 @@ export const metadata: Metadata = {
   description: 'インタラクティブマップでスポットを発見・共有できるWebアプリケーション',
   keywords: ['地図', 'スポット', '共有', 'マップ', 'Mikke'],
   authors: [{ name: 'Mikke Team' }],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
   openGraph: {
     title: 'Mikke - スポット発見アプリ',
     description: 'インタラクティブマップでスポットを発見・共有',
@@ -60,7 +66,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={`${notoSansJP.variable} ${playfairDisplay.variable} ${openSans.variable} h-full overflow-hidden`}>
-      <body className="font-sans antialiased bg-background text-neutral-800 h-full overflow-hidden">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </head>
+      <body className="font-sans antialiased bg-background text-neutral-800 h-full overflow-hidden touch-manipulation">
         <AuthProvider>
           <BadgeProvider>
             {children}

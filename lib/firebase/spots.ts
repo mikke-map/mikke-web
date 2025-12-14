@@ -205,11 +205,37 @@ export const uploadSpotImage = async (file: File, spotId?: string): Promise<stri
   const filename = `${timestamp}-${file.name}`;
   const folder = spotId ? `spots/${spotId}` : `spots/temp`;
   const storageRef = ref(storage, `${folder}/${filename}`);
-  
+
   await uploadBytes(storageRef, file);
   const downloadURL = await getDownloadURL(storageRef);
-  
+
   return downloadURL;
+};
+
+// Delete spot image from Firebase Storage
+export const deleteSpotImage = async (imageUrl: string): Promise<void> => {
+  try {
+    // Extract the path from the URL
+    // Firebase Storage URLs have format: https://firebasestorage.googleapis.com/v0/b/[bucket]/o/[encoded-path]?...
+    const urlObj = new URL(imageUrl);
+    const pathMatch = urlObj.pathname.match(/\/o\/(.+?)(\?|$)/);
+
+    if (!pathMatch || !pathMatch[1]) {
+      console.error('Invalid storage URL format');
+      return;
+    }
+
+    // Decode the path (Firebase encodes slashes as %2F)
+    const encodedPath = pathMatch[1];
+    const path = decodeURIComponent(encodedPath);
+
+    // Create a reference and delete
+    const storageRef = ref(storage, path);
+    await deleteObject(storageRef);
+  } catch (error) {
+    console.error('Error deleting image from storage:', error);
+    // Don't throw error to allow spot update to continue even if image deletion fails
+  }
 };
 
 // Rate a spot (like/dislike)
