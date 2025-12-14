@@ -1,17 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Trees, 
-  Baby, 
-  Gamepad2, 
-  Coffee, 
+import {
+  Trees,
+  Baby,
+  Gamepad2,
+  Coffee,
   ShoppingBag,
   Camera,
   Package2,
   Dog,
   Building2,
   Car,
+  Trash2,
   Sparkles,
   MoreHorizontal,
   Menu,
@@ -34,6 +35,7 @@ const filterCategories = [
   // { id: 'pet' as CategoryId, label: 'ペット', icon: Dog },
   { id: 'public_facility' as CategoryId, label: '公共施設', icon: Building2 },
   { id: 'transportation' as CategoryId, label: '交通', icon: Car },
+  { id: 'trash_can' as CategoryId, label: 'ゴミ箱', icon: Trash2 },
   // { id: 'others' as CategoryId, label: 'その他', icon: Sparkles },
 ];
 

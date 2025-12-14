@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHand
 import {
   Navigation, Plus, Trees, Baby, PartyPopper, Coffee,
   Armchair, PawPrint, Bath, Dices, BabyIcon, Droplets,
-  Sailboat, Camera, ShoppingBag, HelpCircle, Locate
+  Sailboat, Camera, ShoppingBag, HelpCircle, Locate, Trash2
 } from 'lucide-react';
 import { loadGoogleMaps, createMap, geocodeLatLng, getCurrentLocation } from '@/lib/google-maps/config';
 import { FirebaseSpot } from '@/lib/firebase/spots';
@@ -100,6 +100,7 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
         pet: PawPrint,
         public_facility: Bath,
         transportation: Navigation,
+        trash_can: Trash2,
         others: HelpCircle,
       };
 
@@ -119,6 +120,7 @@ const GoogleMapComponent = forwardRef<GoogleMapRef, GoogleMapProps>(
         pet: '#84cc16',               // lime
         public_facility: '#3b82f6',   // blue
         transportation: '#6b7280',    // gray
+        trash_can: '#6B7480',         // gray (same as category color)
         others: '#8b5cf6',            // violet
       };
 

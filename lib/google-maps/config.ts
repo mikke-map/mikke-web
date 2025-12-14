@@ -38,7 +38,7 @@ export const createMap = (
     streetViewControl: false,
     fullscreenControl: true,
     zoomControl: true,
-    mapId: 'DEMO_MAP_ID', // Required for AdvancedMarkerElement
+    mapId: '4ec649b361260cbd65c2c40b', // Mikke custom styled map
     // Prevent page zoom while allowing map zoom on mobile
     gestureHandling: 'greedy', // Allow one-finger pan, pinch-to-zoom on map only
     // Note: styles cannot be used with mapId

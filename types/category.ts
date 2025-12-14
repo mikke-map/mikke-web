@@ -28,7 +28,7 @@ export interface ItemStatus {
 }
 
 // 新しいカテゴリIDの型（メインカテゴリのみ）
-export type CategoryId = 
+export type CategoryId =
   | 'park_outdoor'
   | 'family'
   | 'entertainment'
@@ -39,6 +39,7 @@ export type CategoryId =
   | 'pet'
   | 'public_facility'
   | 'transportation'
+  | 'trash_can'
   | 'others';
 
 // カテゴリデータをロードする関数
@@ -60,5 +61,6 @@ export const CATEGORY_EMOJI_ICONS: Record<CategoryId, string> = {
   'pet': '🐕',
   'public_facility': '🏢',
   'transportation': '🚗',
+  'trash_can': '🗑️',
   'others': '✨'
 };

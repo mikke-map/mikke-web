@@ -202,35 +202,51 @@ export default function HomePage() {
 
       {/* Main Content */}
       {currentScreen === 'home' && (
-        <main className="flex-1 flex flex-col overflow-hidden min-h-0">
-          {/* Filter Section with Menu Button */}
-          <FilterSection onMenuClick={() => setIsMenuOpen(true)} />
-
-          {/* Map Section - Full viewport with SpotList overlay */}
-          <div className="flex-1 relative overflow-hidden min-h-0">
-            {/* Map Section - Use GoogleMap when API key is available */}
-            {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-              <GoogleMap 
-                ref={mapRef}
-                spots={normalizedSpots as any}
-                onAddSpot={handleAddSpot}
-                onSpotClick={handleSpotClick}
-                onBoundsChange={handleBoundsChange}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                <div className="text-center text-gray-500 dark:text-gray-400">
-                  <p className="mb-2">Google Maps APIキーが設定されていません</p>
-                  <p className="text-sm">.env.localファイルにAPIキーを追加してください</p>
-                </div>
-              </div>
-            )}
-            
-            {/* Spot List Section - Absolute positioned bottom sheet */}
-            <SpotList 
+        <main className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
+          {/* Left Section - PC only (FilterSection + SpotList) */}
+          <div className="hidden lg:flex lg:flex-col lg:w-1/2 overflow-hidden border-r border-[var(--border-light)]">
+            <FilterSection onMenuClick={() => setIsMenuOpen(true)} />
+            <SpotList
               spots={visibleSpots}
               onSpotClick={handleSpotClick}
             />
+          </div>
+
+          {/* Right Section (PC) / Full Section (Mobile) */}
+          <div className="flex-1 lg:w-1/2 flex flex-col overflow-hidden">
+            {/* Mobile: Show FilterSection */}
+            <div className="lg:hidden">
+              <FilterSection onMenuClick={() => setIsMenuOpen(true)} />
+            </div>
+
+            {/* Map Container */}
+            <div className="flex-1 relative overflow-hidden min-h-0">
+              {/* Map Section - Use GoogleMap when API key is available */}
+              {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                <GoogleMap
+                  ref={mapRef}
+                  spots={normalizedSpots as any}
+                  onAddSpot={handleAddSpot}
+                  onSpotClick={handleSpotClick}
+                  onBoundsChange={handleBoundsChange}
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <div className="text-center text-gray-500 dark:text-gray-400">
+                    <p className="mb-2">Google Maps APIキーが設定されていません</p>
+                    <p className="text-sm">.env.localファイルにAPIキーを追加してください</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Mobile only: Show SpotList */}
+              <div className="lg:hidden">
+                <SpotList
+                  spots={visibleSpots}
+                  onSpotClick={handleSpotClick}
+                />
+              </div>
+            </div>
           </div>
         </main>
       )}

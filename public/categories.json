@@ -326,6 +326,29 @@
       ]
     },
     {
+      "id": "trash_can",
+      "displayName": "ゴミ箱",
+      "icon": "trash.fill",
+      "color": {
+        "red": 107,
+        "green": 116,
+        "blue": 128,
+        "hex": "#6B7480"
+      },
+      "subCategories": [
+        {
+          "id": "general",
+          "name": "一般ゴミ",
+          "tags": ["燃えるゴミ", "燃えないゴミ"]
+        },
+        {
+          "id": "plastic_bottle",
+          "name": "ペットボトル・缶",
+          "tags": []
+        }
+      ]
+    },
+    {
       "id": "others",
       "displayName": "その他",
       "icon": "star.fill",

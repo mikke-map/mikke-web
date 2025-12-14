@@ -69,6 +69,7 @@ export const BADGE_METADATA: Record<CategoryId, {
   pet: { label: 'ペット愛好家', icon: '🐕', color: '#84CC16' },
   public_facility: { label: '公共施設マスター', icon: '🏢', color: '#06B6D4' },
   transportation: { label: '交通エキスパート', icon: '🚗', color: '#3B82F6' },
+  trash_can: { label: 'クリーンキーパー', icon: '🗑️', color: '#6B7280' },
   others: { label: '発見者', icon: '✨', color: '#9CA3AF' },
 };
 

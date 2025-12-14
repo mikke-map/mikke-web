@@ -19,6 +19,7 @@ export function SpotList({ spots, onSpotClick }: SpotListProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
   const containerRef = useRef<HTMLElement>(null);
   const { currentFilter } = useSpotStore();
   const { getCategoryById, getSubCategory, initialize } = useCategoryStore();
@@ -26,6 +27,18 @@ export function SpotList({ spots, onSpotClick }: SpotListProps) {
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Detect desktop viewport
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
 
   // Sheet height mappings
   const getSheetHeight = (state: SheetState): string => {
@@ -131,19 +144,19 @@ export function SpotList({ spots, onSpotClick }: SpotListProps) {
   };
 
   return (
-    <section 
+    <section
       ref={containerRef}
-      className="absolute bottom-0 left-0 right-0 z-30 flex flex-col bg-[var(--bg-card)] rounded-t-3xl shadow-2xl border-t border-[var(--border-light)] transition-all duration-300 ease-out"
-      style={{ 
-        height: getSheetHeight(sheetState),
-        transform: isDragging ? `translateY(${-currentY}px)` : 'translateY(0)',
+      className="absolute bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto z-30 flex flex-col bg-[var(--bg-card)] rounded-t-3xl lg:rounded-none shadow-2xl lg:shadow-none border-t border-[var(--border-light)] lg:border-t-0 transition-all duration-300 ease-out lg:flex-1"
+      style={{
+        height: isDesktop ? '100%' : getSheetHeight(sheetState),
+        transform: isDragging && !isDesktop ? `translateY(${-currentY}px)` : 'translateY(0)',
         transition: isDragging ? 'none' : 'all 0.3s ease-out',
-        cursor: isDragging ? 'grabbing' : 'grab'
+        cursor: !isDesktop && isDragging ? 'grabbing' : !isDesktop ? 'grab' : 'default'
       }}
     >
-      {/* Drag Handle */}
-      <div 
-        className="flex flex-col items-center justify-center py-3 cursor-grab touch-none select-none hover:bg-[var(--bg-tertiary)] transition-colors"
+      {/* Drag Handle - Mobile only */}
+      <div
+        className="flex lg:hidden flex-col items-center justify-center py-3 cursor-grab touch-none select-none hover:bg-[var(--bg-tertiary)] transition-colors"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
